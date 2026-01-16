@@ -1,0 +1,94 @@
+.code-display-wrapper {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 24px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.code-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  gap: 12px;
+}
+
+.code-header h3 {
+  font-size: 18px;
+  color: #1f2937;
+  margin: 0;
+  font-weight: 600;
+}
+
+.copy-btn {
+  background: #059669;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  white-space: nowrap;
+}
+
+.copy-btn:hover {
+  background: #047857;
+}
+
+.code-block {
+  background: #f9fafb;
+  padding: 16px;
+  border-radius: 6px;
+  overflow-x: auto;
+  font-size: 12px;
+  line-height: 1.6;
+  color: #1f2937;
+  margin: 0;
+  border: 1px solid #e5e7eb;
+  font-family: 'Courier New', monospace;
+}
+
+.code-block::-webkit-scrollbar {
+  height: 6px;
+}
+
+.code-block::-webkit-scrollbar-track {
+  background: #f3f4f6;
+}
+
+.code-block::-webkit-scrollbar-thumb {
+  background: #3b82f6;
+  border-radius: 3px;
+}
+
+.code-info {
+  margin-top: 12px;
+  text-align: center;
+  color: #9ca3af;
+  font-size: 11px;
+}
+
+/* Animations removed */
+
+@media (max-width: 768px) {
+  .code-display-wrapper {
+    padding: 16px;
+  }
+
+  .code-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .copy-btn {
+    width: 100%;
+  }
+
+  .code-block {
+    font-size: 11px;
+    padding: 12px;
+  }
+}

@@ -1,0 +1,21 @@
+customer_id,age,tenure_months,monthly_charges,total_charges,contract_type,payment_method,internet_service,online_security,tech_support,streaming_tv,streaming_movies,paperless_billing,churn
+1001,45,12,85.50,1026.00,Month-to-month,Electronic check,Fiber optic,No,No,Yes,Yes,Yes,1
+1002,32,24,70.25,1686.00,One year,Credit card,DSL,Yes,Yes,No,No,No,0
+1003,58,48,95.75,4596.00,Two year,Bank transfer,Fiber optic,Yes,Yes,Yes,Yes,Yes,0
+1004,22,6,55.00,330.00,Month-to-month,Electronic check,DSL,No,No,No,No,Yes,1
+1005,41,36,89.50,3222.00,One year,Credit card,Fiber optic,Yes,Yes,Yes,No,No,0
+1006,29,3,45.25,135.75,Month-to-month,Electronic check,DSL,No,No,No,No,Yes,1
+1007,53,60,110.00,6600.00,Two year,Bank transfer,Fiber optic,Yes,Yes,Yes,Yes,No,0
+1008,35,18,75.50,1359.00,One year,Credit card,DSL,Yes,No,Yes,No,Yes,0
+1009,27,9,50.75,456.75,Month-to-month,Electronic check,DSL,No,No,No,No,Yes,1
+1010,48,42,98.00,4116.00,Two year,Bank transfer,Fiber optic,Yes,Yes,Yes,Yes,Yes,0
+1011,31,15,65.25,978.75,Month-to-month,Credit card,DSL,Yes,No,No,No,No,1
+1012,56,54,105.50,5697.00,Two year,Bank transfer,Fiber optic,Yes,Yes,Yes,Yes,No,0
+1013,24,4,48.00,192.00,Month-to-month,Electronic check,DSL,No,No,No,No,Yes,1
+1014,44,30,82.75,2482.50,One year,Credit card,Fiber optic,Yes,Yes,No,Yes,Yes,0
+1015,38,21,72.50,1522.50,Month-to-month,Electronic check,DSL,No,Yes,No,No,Yes,1
+1016,51,45,92.25,4151.25,Two year,Bank transfer,Fiber optic,Yes,Yes,Yes,No,No,0
+1017,26,7,52.00,364.00,Month-to-month,Electronic check,DSL,No,No,No,No,Yes,1
+1018,42,33,86.75,2862.75,One year,Credit card,Fiber optic,Yes,Yes,Yes,Yes,No,0
+1019,33,12,68.50,822.00,Month-to-month,Electronic check,DSL,Yes,No,No,No,Yes,1
+1020,49,51,102.00,5202.00,Two year,Bank transfer,Fiber optic,Yes,Yes,Yes,Yes,Yes,0
