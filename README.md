@@ -2,6 +2,8 @@
 
 ![LangGraph UI Preview](Screenshot%202026-01-17%20132505.png)
 
+![LangGraph Backend Flow](Untitled-1.drawio.png)
+
 Pure LangGraph state machine with 3 specialized agents analyzing datasets and generating Python code. Local Ollama integration (no external APIs required).
 
 ## Project Structure
