@@ -1,5 +1,7 @@
 # LangGraph Multi-Agent ML Analysis System
 
+![LangGraph UI Preview](Screenshot%202026-01-17%20132505.png)
+
 Pure LangGraph state machine with 3 specialized agents analyzing datasets and generating Python code. Local Ollama integration (no external APIs required).
 
 ## Project Structure

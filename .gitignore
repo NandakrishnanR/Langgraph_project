@@ -46,3 +46,6 @@ htmlcov/
 # Dependencies
 node_modules/
 package-lock.json
+
+# Logo files (keep local, don't push to git)
+frontend/public/mr-logo.svg

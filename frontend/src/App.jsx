@@ -3,9 +3,9 @@ import axios from 'axios'
 import './App.css'
 
 const baseAgents = [
-  { id: 1, title: 'DataCleaner', emoji: '🧹', color: '#6366f1' },
-  { id: 2, title: 'AlgorithmSelector', emoji: '🎯', color: '#a855f7' },
-  { id: 3, title: 'CodeGenerator', emoji: '⚡', color: '#10b981' }
+  { id: 1, title: 'DataCleaner', emoji: '🧹', color: '#3b82f6' },
+  { id: 2, title: 'AlgorithmSelector', emoji: '🎯', color: '#1e40af' },
+  { id: 3, title: 'CodeGenerator', emoji: '⚡', color: '#1e3a8a' }
 ]
 
 function App() {
@@ -85,50 +85,59 @@ function App() {
     <div className="app">
       <header className="header">
         <div className="header-content">
-          <h1 className="title">🤖 ML Algorithm Advisor</h1>
-          <p className="subtitle">Powered by LangGraph + Ollama llama3.1</p>
-          <p className="description">Upload CSV → Auto-analyze → Get best ML algorithm + Python code</p>
+          <div className="logo-container">
+            <img src="/MR_Logo.webp" alt="MR Logo" />
+          </div>
+          <div className="title-section">
+            <h1 className="title">ML Algorithm Advisor</h1>
+            <p className="subtitle">Powered by LangGraph + Ollama llama3.1</p>
+            <p className="description">Upload CSV -> Auto-analyze -> Get best ML algorithm + Python code</p>
+          </div>
         </div>
       </header>
 
       <div className="container">
-        <div className="panel upload-panel">
-          <div className="panel-header">
+        <div className="top-section">
+          <div className="mini-card upload-card">
             <h3>📊 Upload Dataset</h3>
-            <button className="btn-primary" onClick={runWorkflow} disabled={loading || !file}>
-              {loading ? '⏳ Analyzing...' : '🚀 Analyze & Generate'}
-            </button>
+            <p className="mini-text">Select a CSV to begin</p>
+            <div className="mini-actions">
+              <input
+                type="file"
+                accept=".csv"
+                onChange={handleFileChange}
+                disabled={loading}
+                id="file-input"
+                style={{ display: 'none' }}
+              />
+              <label htmlFor="file-input" className="mini-btn primary">
+                {file ? '🔁 Replace CSV' : '📁 Upload CSV'}
+              </label>
+              <button
+                type="button"
+                className="mini-btn secondary"
+                onClick={runWorkflow}
+                disabled={loading || !file}
+              >
+                {loading ? '⏳ Analyzing...' : ' Analyze'}
+              </button>
+            </div>
+            <p className="mini-meta">{file ? file.name : 'Awaiting file selection'}</p>
+            {error && <div className="mini-error"> {error}</div>}
           </div>
-          <div className="upload-area">
-            <input
-              type="file"
-              accept=".csv"
-              onChange={handleFileChange}
-              disabled={loading}
-              id="file-input"
-              style={{ display: 'none' }}
-            />
-            <label htmlFor="file-input" className="file-label">
-              {file ? `✓ ${file.name}` : '📁 Choose CSV file'}
-            </label>
-          </div>
-          {error && <div className="error-card">❌ {error}</div>}
-        </div>
 
-        <div className="panel agent-panel">
-          <div className="panel-header">
-            <h3>🔄 Agent Pipeline</h3>
-          </div>
-          <div className="agents-grid">
-            {agents.map((agent) => (
-              <div key={agent.id} className={`agent-box agent-${agent.status}`} style={{ borderColor: agent.color }}>
-                <div className="agent-number">Agent {agent.id}</div>
-                <div className="agent-emoji">{agent.emoji}</div>
-                <div className="agent-title">{agent.title}</div>
-                <div className={`agent-badge ${agent.status}`}>{agent.status}</div>
-              </div>
-            ))}
-          </div>
+          {agents.map((agent) => (
+            <div
+              key={agent.id}
+              className="mini-card agent-card"
+              style={{ borderColor: agent.color }}
+            >
+              <div className="agent-number">Agent {agent.id}</div>
+              <div className="agent-emoji">{agent.emoji}</div>
+              <div className="agent-title">{agent.title}</div>
+              <div className={`agent-badge ${agent.status}`}>{agent.status}</div>
+            </div>
+          ))}
         </div>
 
         <div className="grid">
@@ -138,14 +147,19 @@ function App() {
             </div>
             <div className="messages">
               {messages.length === 0 && <p className="muted">Upload a CSV to start analysis</p>}
-              {messages.map((msg, idx) => (
-                msg.role !== 'user' && (
+              {messages.map((msg, idx) => {
+                const role = (msg.role || '').toLowerCase()
+                if (role === 'user' || role === 'human') {
+                  return null
+                }
+                const roleLabel = msg.role ? msg.role.toUpperCase() : 'AGENT'
+                return (
                   <div key={idx} className="message">
-                    <div className="message-role">📍 {msg.role.toUpperCase()}</div>
+                    <div className="message-role">📍 {roleLabel}</div>
                     <div className="message-content">{msg.content}</div>
                   </div>
                 )
-              ))}
+              })}
             </div>
           </div>
 
@@ -158,7 +172,7 @@ function App() {
               {messages.length > 0 && (
                 <div className="message">
                   <div className="message-content">
-                    <strong>Dataset Processed ✅</strong><br/>
+                    <strong>Dataset Processed </strong><br/>
                     {messages.length} agent responses generated
                   </div>
                 </div>
@@ -185,7 +199,7 @@ function App() {
       </div>
 
       <footer className="footer">
-        <p>⚡ Pure LangGraph State Machine • No FastAPI • Local Ollama</p>
+        <p>© MIT License(only for demo purpose) • LangGraph • Local Ollama Integration</p>
       </footer>
     </div>
   )
