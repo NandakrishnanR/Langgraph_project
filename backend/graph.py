@@ -1,4 +1,10 @@
-"""Minimal LangGraph workflow with three cooperating agents using Ollama."""
+"""LangGraph state machine powering the backend agents.
+
+This module wires three specialized LangChain agents—data cleaning, algorithm
+selection, and code generation—into a sequential LangGraph workflow. The graph
+shares conversation state plus any generated Python code, enabling the aiohttp
+backend to report intermediate reasoning alongside executable scripts.
+"""
 
 import os
 import re
@@ -11,14 +17,16 @@ from langgraph.graph.message import add_messages
 
 
 class AgentState(TypedDict):
-    """Shared conversational state carried between agents."""
+    """Container passed between nodes; LangGraph merges returned keys."""
 
+    # ``messages`` accumulates HumanMessage/AIMessage entries as agents reply.
     messages: Annotated[list, add_messages]
-    generated_code: str  # Extracted Python code from CodeGenerator
+    # ``generated_code`` captures the latest ```python``` block from the generator.
+    generated_code: str
 
 
 def _content_to_text(message: AIMessage) -> str:
-    """Normalize LangChain message content into a plain string."""
+    """Normalize heterogeneous LangChain message formats into plain text."""
 
     content = getattr(message, "content", "")
     if isinstance(content, str):
@@ -40,8 +48,8 @@ def _content_to_text(message: AIMessage) -> str:
     return str(content)
 
 
-# Single local model reused by all agents (no external API required)
-# Use tight generation limits + keep_alive so we avoid repeated cold starts.
+# Single local model reused by every node; no API keys required.
+# ``keep_alive`` reduces cold starts while ``num_predict`` keeps outputs concise.
 MODEL_NAME = os.getenv("OLLAMA_MODEL", "llama3.1")
 model = ChatOllama(
     model=MODEL_NAME,
@@ -55,28 +63,40 @@ model = ChatOllama(
 
 
 def make_agent(role: str, idx: int, goal: str, extract_code: bool = False):
-    """Creating a LangGraph node that appends an agent reply to the message list."""
+    """Factory producing node callables compatible with LangGraph.
+
+    Parameters
+    ----------
+    role: str
+        Label stored on the outgoing ``AIMessage`` so the frontend can render it.
+    idx: int
+        Human-friendly index appended to the content for traceability.
+    goal: str
+        Prompt fragment injected as a ``HumanMessage`` each time the node runs.
+    extract_code: bool
+        When true, the node captures ```python``` blocks into ``generated_code``.
+    """
 
     def node(state: AgentState) -> AgentState:
-        # concise prompt for speed else it takes more speed,so for demo it will affect
+        # Inject role-specific guidance so the agent understands its objective.
         guidance = HumanMessage(content=f"{goal}")
 
-        # Trim history to reduce token count while keeping the latest context
+        # Preserve only the last few exchanges to minimise context window usage.
         history = state["messages"][-3:]
         reply = model.invoke(history + [guidance])
         reply_text = _content_to_text(reply)
 
-        # Add agent number prefix
+        # Prefix response with agent identifier for clear timeline display.
         msg_content = f"Agent {idx}: {reply_text}"
         result = {"messages": [AIMessage(content=msg_content, name=f"{role}")]}
         
-        # Extract Python code from the code generator
+        # Optionally capture executable snippets for downstream rendering.
         if extract_code:
             code_blocks = re.findall(r'```(?:python)?\s*(.*?)```', reply_text, re.DOTALL | re.IGNORECASE)
             if code_blocks:
                 result["generated_code"] = code_blocks[-1].strip()
             else:
-                # Fallback to returning the entire reply so the UI shows something useful
+                # Fallback: expose the full reply so users still see attempt details.
                 result["generated_code"] = reply_text.strip()
         
         return result
@@ -84,7 +104,8 @@ def make_agent(role: str, idx: int, goal: str, extract_code: bool = False):
     return node
 
 
-# Defining three ML workflow agents with prompts,
+# --- Agent definitions ----------------------------------------------------
+# Each agent reuses ``make_agent`` with a tailored goal description.
 data_cleaner = make_agent(
     "DataCleaner", 1,
     "Summarize data issues in <=2 sentences: missing %, dtype notes, obvious scaling needs."
@@ -113,7 +134,8 @@ code_generator = make_agent(
 )
 
 
-# Build the state machine 
+# --- Graph assembly -------------------------------------------------------
+# Register each callable as a node and connect them sequentially.
 graph = StateGraph(AgentState)
 graph.add_node("data_cleaner", data_cleaner)
 graph.add_node("algorithm_selector", algorithm_selector)
@@ -124,17 +146,18 @@ graph.add_edge("data_cleaner", "algorithm_selector")
 graph.add_edge("algorithm_selector", "code_generator")
 graph.add_edge("code_generator", END)
 
-# Compiled graph ready for invocation
+# Cache a compiled executor; compilation resolves the topology to a runnable graph.
 workflow = graph.compile()
 
 
 def run_workflow(prompt: str):
-    """helper to invoke the workflow from a plain prompt."""
+    """Invoke the compiled LangGraph workflow with a human seed message."""
 
     initial_state: AgentState = {
         "messages": [HumanMessage(content=prompt)],
         "generated_code": ""
     }
+    # ``invoke`` executes each node synchronously following the defined edges.
     result = workflow.invoke(initial_state)
     return result["messages"], result.get("generated_code", "")
 
